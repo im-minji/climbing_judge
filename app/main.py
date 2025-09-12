@@ -1,23 +1,29 @@
+import os
 from fastapi import FastAPI
+from supabase import create_client, Client # supabase 라이브러리 import
 
-# 1️⃣ FastAPI 앱 생성
-app = FastAPI(
-    title="Climbing Judge Portal",
-    description="심판 등록 및 대회 관리용 최소 FastAPI 서버",
-    version="0.1.0"
-)
+# Render에서 설정한 환경 변수를 불러옵니다.
+url: str = os.environ.get("SUPABASE_URL")
+key: str = os.environ.get("SUPABASE_KEY")
 
-# 2️⃣ 기본 테스트 라우트
+# Supabase 클라이언트를 생성합니다. 이 클라이언트를 통해 데이터베이스와 통신합니다.
+supabase: Client = create_client(url, key)
+
+app = FastAPI()
+
+
 @app.get("/")
-def root():
-    """
-    루트 URL 테스트용
-    GET 요청 시 {"message": "Server is running"} 반환
-    """
+def read_root():
     return {"message": "Server is running"}
 
-# 확장용: 추후 기능 라우트 추가
-# 예시:
-# from app import users, competitions
-# app.include_router(users.router)
-# app.include_router(competitions.router)
+# --- 데이터베이스 연결 테스트를 위한 코드 추가 ---
+@app.get("/judges")
+def get_judges():
+    """
+    judges 테이블에서 모든 데이터를 조회하는 테스트 API
+    """
+    # .from_("테이블이름").select("*").execute() 가 기본 조회 구문입니다.
+    response = supabase.from_("judges").select("*").execute()
+    
+    # 데이터는 response 객체의 'data' 속성에 담겨 있습니다.
+    return response.data
