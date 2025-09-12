@@ -6,7 +6,7 @@ router = APIRouter()
 @router.post("/competitions")
 def create_compeition(competition: CompetitionCreate):
     competition_data = competition.model_dump(mode="json")
-    response = supabase.from_("compeitions").insert(competition_data).execute()
+    response = supabase.from_("competitions").insert(competition_data).execute()
     return response.data
 
 
