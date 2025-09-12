@@ -12,5 +12,5 @@ def get_judges():
 @router.post("/judges")
 def create_judge(judge: JudgeCreate):
 	judge_data = judge.model_dump()
-	response = supabase.from_("judges").inset(judge_data).execute()
+	response = supabase.from_("judges").insert(judge_data).execute()
 	return response.data
