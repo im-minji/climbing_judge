@@ -16,4 +16,4 @@ def read_root():
 app.include_router(judges.router)
 app.include_router(competitions.router)
 app.include_router(auth.router, prefix="/auth")
-app.include_router(auth.router, prefix="/users")
+app.include_router(users.router, prefix="/users")
