@@ -12,3 +12,6 @@ class CompetitionCreate(BaseModel):
 		start_date: datetime.date
 		end_date: datetime.date
 		location: str
+
+class JudgeAssignmentCreate(BaseModel):
+		judge_id: str
