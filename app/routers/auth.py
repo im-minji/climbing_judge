@@ -33,19 +33,15 @@ def login(request: LoginRequest):
     # --- [새로운 디버깅용 API 추가] ---
 @router.get("/check-admin")
 def check_admin_privileges():
-    """
-    서버의 Supabase 클라이언트가 관리자 권한을 가졌는지 테스트합니다.
-    """
     try:
         # 관리자만 가능한 '모든 사용자 목록 조회'를 시도합니다.
-        response = supabase.auth.admin.list_users()
+        user_list = supabase.auth.admin.list_users() # 변수 이름을 user_list로 변경
         return {
             "status": "SUCCESS", 
             "message": "Server has admin privileges.", 
-            "user_count": len(response.users)
+            "user_count": len(user_list) # .users를 제거하고 리스트의 길이를 바로 계산
         }
     except Exception as e:
-        # 실패 시, 에러 내용을 그대로 반환합니다.
         raise HTTPException(
             status_code=403, 
             detail=f"Server does NOT have admin privileges. Error: {e}"
