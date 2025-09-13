@@ -5,7 +5,7 @@ from app.routers import judges, competitions, auth
 
 app = FastAPI()
 
-app.mount("static/", StaticFiles(directory="static", name="static"))
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # 기본 "/" 경로
 @app.get("/")
