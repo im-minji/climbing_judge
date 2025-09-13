@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import datetime
 
 class JudgeCreate(BaseModel): 
@@ -8,6 +8,7 @@ class JudgeCreate(BaseModel):
 	national_license_grade: int
 	email: str
 	password: str
+	role: str = Field(default='judge')
 
 class CompetitionCreate(BaseModel):
 	name: str

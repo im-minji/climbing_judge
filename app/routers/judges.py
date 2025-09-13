@@ -31,7 +31,8 @@ def create_judge(judge: JudgeCreate):
             "name": judge.name,
             "affiliation": judge.affiliation,
             "national_license_grade": judge.national_license_grade,
-            "email": judge.email # 실제 이메일도 함께 저장
+            "email": judge.email, # 실제 이메일도 함께 저장
+            "role": judge.role
         }
         
         response = supabase.from_("judges").insert(profile_data).execute()
