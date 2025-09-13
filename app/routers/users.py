@@ -23,6 +23,12 @@ def get_my_profile(current_user: dict = Depends(get_current_user)):
     로그인한 사용자의 프로필 정보(judges 테이블)를 반환합니다.
     """
     user_id = current_user.id
+
+    # --- [디버깅 코드 추가] ---
+    # 서버가 어떤 ID로 프로필을 찾고 있는지 로그에 명확하게 출력합니다.
+    print(f"--- [DEBUG] Searching for profile with user_id: {user_id} ---")
+    # --- [디버깅 코드 끝] ---
+    
     response = supabase.from_("judges").select("*").eq("id", user_id).single().execute()
     
     if not response.data:
