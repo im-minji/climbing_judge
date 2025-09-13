@@ -1,0 +1,22 @@
+/* static/style.css */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    /* 배경색은 Pico.css의 기본 배경색을 따르도록 둡니다. */
+}
+
+main.container {
+    /* 로그인 박스의 최대 너비를 지정하여 너무 커지는 것을 방지 */
+    max-width: 450px;
+}
+
+hgroup {
+  text-align: center;
+}
+
+#login-form button {
+  margin-top: 1.5rem;
+}

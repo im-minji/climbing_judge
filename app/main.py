@@ -1,7 +1,7 @@
 # app/main.py
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from app.routers import judges, competitions, auth
+from app.routers import judges, competitions, auth, users
 
 app = FastAPI()
 
@@ -16,3 +16,4 @@ def read_root():
 app.include_router(judges.router)
 app.include_router(competitions.router)
 app.include_router(auth.router, prefix="/auth")
+app.include_router(auth.router, prefix="/users")

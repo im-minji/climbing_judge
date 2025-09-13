@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 - 심판 관리 시스템</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <main class="container">
+        <article>
+            <hgroup>
+                <h1>암벽등반 심판 관리</h1>
+                <h2>로그인</h2>
+            </hgroup>
+            <form id="login-form">
+                <input type="text" id="judge_number" name="judge_number" placeholder="심판 번호" required>
+                <input type="password" id="password" name="password" placeholder="비밀번호" required>
+                <button type="submit">로그인</button>
+            </form>
+            <p id="error-message" style="color: red;"></p>
+        </article>
+    </main>
+    <script src="/static/login.js"></script>
+</body>
+</html>
