@@ -1,7 +1,6 @@
 # app/routers/users.py
 from fastapi import APIRouter, Depends, HTTPException, Request
 from app.db import supabase
-from gotrue.errors import AuthApiError
 
 router = APIRouter()
 
@@ -10,12 +9,12 @@ async def get_current_user(request: Request):
     auth_header = request.headers.get("Authorization")
     if not auth_header:
         raise HTTPException(status_code=401, detail="Authorization header missing")
-    
-    token = auth_header.split(" ")[1] # "Bearer <token>" 형식에서 토큰만 추출
+
+    token = auth_header.split(" ")[1]
     try:
         user_response = supabase.auth.get_user(token)
         return user_response.user
-    except AuthApiError:
+    except Exception: # AuthApiError 대신 모든 예외(Exception)를 잡도록 변경
         raise HTTPException(status_code=401, detail="Invalid token")
 
 @router.get("/me")
