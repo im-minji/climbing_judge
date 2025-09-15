@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from app.db import supabase
-from app.schemas import JudgeCreate
+from app.schemas import JudgeCreate, JudgeUpdate
 
 router = APIRouter()
 
@@ -53,3 +53,31 @@ def get_judge_by_id(judge_id: str):
     if not response.data:
         return {"message": "Judge not found"}
     return response.data[0]
+
+@router.patch("/judges/{judge_id}")
+def update_judge(judge_id: str, judge_update: JudgeUpdate):
+     # 사용자가 보낸 데이터만 필터링하여 update_data를 만들기
+    update_data = judge_update.model_dump(exclude_unset=True)
+
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No update data provided")
+
+    response = supabase.from_("judges").update(update_data).eq("id", judge_id).execute()
+    
+    if not response.data:
+        raise HTTPException(status_code=404, detail="Judge not found")
+
+    return response.data
+
+@router.delete("/judges/{judge_id}")
+def delete_judge_by_id(judge_id: str):
+    try:
+        # 1. Supabase 인증 시스템에서 사용자를 삭제합니다.
+        #    이 작업은 관리자 권한(service_role key)이 반드시 필요합니다.
+        supabase.auth.admin.delete_user(judge_id)
+        
+        # 2. judges 테이블의 데이터는 foreign key 관계(ON DELETE CASCADE)에 의해 자동으로 삭제됩니다.
+        
+        return {"message": f"Judge with id {judge_id} deleted successfully."}
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=f"Judge not found or failed to delete: {e}")

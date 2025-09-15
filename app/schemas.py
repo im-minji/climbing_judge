@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 import datetime
+from typing import Optional 
 
 class JudgeCreate(BaseModel): 
 	judge_number: str
@@ -22,3 +23,11 @@ class JudgeAssignmentCreate(BaseModel):
 class LoginRequest(BaseModel):
 	judge_number: str
 	password: str
+
+class JudgeUpdate(BaseModel):
+	judge_number: Optional[str] = None
+	name: Optional[str] = None
+	affiliation: Optional[int] = None
+	national_license_grage: Optional[int] = None
+	email: Optional[str] = None
+	role: Optional[str] = None
