@@ -1,2 +1,48 @@
-<h1>심판 프로필</h1>
-<p>이곳에 본인의 심판 정보가 표시됩니다.</p>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>내 프로필 - 심판</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+</head>
+<body>
+    <main class="container">
+        <nav>
+            <ul>
+                <li><strong id="profile-name">내 프로필</strong></li>
+            </ul>
+            <ul>
+                <li><a href="#" id="logout-btn">로그아웃</a></li>
+            </ul>
+        </nav>
+
+        <article id="profile-info">
+            </article>
+
+        <section>
+            <h2>배정된 대회 목록</h2>
+            <label for="year-filter">년도별 보기:
+                <select id="year-filter">
+                    <option value="all">전체</option>
+                </select>
+            </label>
+            <table>
+                <thead>
+                    <tr>
+                        <th>대회명</th>
+                        <th>시작일</th>
+                        <th>종료일</th>
+                        <th>장소</th>
+                    </tr>
+                </thead>
+                <tbody id="competitions-tbody"></tbody>
+            </table>
+        </section>
+        
+        <a href="#" role="button" class="secondary">비밀번호 변경</a>
+
+    </main>
+    <script src="/static/profile.js"></script>
+</body>
+</html>
