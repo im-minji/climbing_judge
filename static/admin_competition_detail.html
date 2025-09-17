@@ -12,30 +12,40 @@
         /* 심판 체크리스트 스타일 */
         .judge-checklist { max-height: 300px; overflow-y: auto; border: 1px solid var(--contrast-border-color); padding: 1rem; border-radius: var(--border-radius); }
         
-        /* 수정 및 삭제 버튼을 담을 컨테이너 */
+        /* 삭제 버튼을 담을 컨테이너 */
         .action-box {
             margin-top: 2rem;
             padding: 1.5rem;
             border: 1px solid var(--contrast-border-color);
             border-radius: var(--border-radius);
-            text-align: center; /* 내부 요소들을 가운데 정렬 */
-        }
-
-        /* action-box 안의 문구 스타일 */
-        .action-box p {
-            margin-bottom: 1rem; /* 버튼과의 간격 */
+            text-align: center;
         }
         
-        /* 버튼이 꽉 차지 않도록 크기 자동 조절 */
         .action-box button {
             width: auto;
             display: inline-block;
         }
 
-        /* 대회 정보 텍스트 간격 조절 */
         #competition-display p {
             margin-bottom: 0.5rem;
         }
+
+        /* 대회 정보와 심판 목록 사이 간격 추가 */
+        #competition-display-section {
+            margin-bottom: 2rem;
+        }
+        
+        /* '대회 정보' 제목과 '수정하기' 버튼을 한 줄에 배치하고 양쪽 끝으로 정렬 */
+        .section-header {
+            display: flex;
+            justify-content: space-between; /* 이 속성이 양쪽 끝으로 밀어냅니다 */
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .section-header h3 {
+            margin-bottom: 0; /* 제목의 불필요한 아래 여백 제거 */
+        }
+
     </style>
 </head>
 <body>
@@ -46,12 +56,14 @@
             </ul>
         </nav>
 
-        <hgroup id="competition-title">
-            </hgroup>
+        <hgroup id="competition-title"></hgroup>
 
         <div id="view-mode">
             <div id="competition-display-section">
-                <h3>대회 정보</h3>
+                <div class="section-header">
+                    <h3>대회 정보</h3>
+                    <button id="edit-btn">수정하기</button>
+                </div>
                 <div id="competition-display">
                     </div>
             </div>
@@ -69,14 +81,9 @@
                     <tbody id="assigned-judges-tbody"></tbody>
                 </table>
             </section>
-
-            <div class="action-box">
-                <p>대회 정보나 심판 배정을 변경하려면 아래 버튼을 누르세요.</p>
-                <button id="edit-btn">수정하기</button>
-            </div>
             
             <div class="action-box">
-                <button id="delete-competition-btn" class="contrast outline">이 대회 삭제하기</button>
+                <button id="delete-competition-btn" class="contrast outline">대회 삭제하기</button>
             </div>
         </div>
 
@@ -84,15 +91,13 @@
             <form id="competition-details-form">
                 <article>
                     <header><h3>대회 정보 수정</h3></header>
-                    <div id="competition-edit-fields">
-                        </div>
+                    <div id="competition-edit-fields"></div>
                 </article>
 
                 <article>
                     <header><h3>심판 배정 수정</h3></header>
                     <input type="search" id="judge-search" placeholder="심판 이름 또는 번호로 검색...">
-                    <div id="judge-checklist" class="judge-checklist">
-                        </div>
+                    <div id="judge-checklist" class="judge-checklist"></div>
                 </article>
                 
                 <footer>
