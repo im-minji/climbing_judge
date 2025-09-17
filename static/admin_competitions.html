@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대회 관리 - 관리자</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+</head>
+<body>
+    <main class="container">
+        <nav>
+            <ul>
+                <li><a href="/static/admin_judges.html">심판 관리</a></li>
+            </ul>
+            <ul>
+                <li><strong>대회 관리</strong></li>
+            </ul>
+        </nav>
+
+        <header style="display: flex; justify-content: space-between; align-items: center;">
+            <hgroup>
+                <h2>대회 목록</h2>
+                <p>전체 대회 목록을 확인합니다.</p>
+            </hgroup>
+            <a href="/static/admin_competition_form.html" role="button">신규 대회 등록</a>
+        </header>
+        
+        <label for="year-filter">년도별 보기:
+            <select id="year-filter">
+                <option value="all">전체</option>
+            </select>
+        </label>
+
+        <figure>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>대회명</th>
+                        <th>시작일</th>
+                        <th>종료일</th>
+                        <th>장소</th>
+                        <th>관리</th>
+                    </tr>
+                </thead>
+                <tbody id="competitions-tbody"></tbody>
+            </table>
+        </figure>
+    </main>
+    <script src="/static/admin_competitions.js"></script>
+</body>
+</html>
