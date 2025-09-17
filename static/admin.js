@@ -1,79 +1,82 @@
-// 전역 변수: 모든 심판 데이터, 현재 페이지, 페이지 당 항목 수
+// =================================================================
+// 전역 변수 (Global Variables)
+// =================================================================
 let allJudges = [];
-let currentPage = 1;
+let currentJudgePage = 1;
 const judgesPerPage = 20;
 
-// 페이지 로드가 완료되면 실행되는 메인 로직
+let allCompetitions = [];
+
+// =================================================================
+// 페이지 초기화 (Initialization)
+// =================================================================
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. 로그인 토큰 확인
+    // 1. 로그인 토큰 확인 (보안)
     const token = localStorage.getItem('access_token');
     if (!token) {
         alert('로그인이 필요합니다.');
-        window.location.href = '/'; // 토큰 없으면 로그인 페이지로 강제 이동
+        window.location.href = '/';
         return;
     }
 
-    // 2. 서버에서 모든 심판 데이터를 한번만 가져옴
+    // 2. 초기 데이터 불러오기
     fetchAllJudges(token);
+    fetchAllCompetitions(token);
 
-    // 3. 심판 등록 폼 제출 이벤트 설정
-    const registerForm = document.getElementById('register-form');
-    registerForm.addEventListener('submit', (event) => {
+    // 3. 폼 제출 이벤트 리스너 설정
+    document.getElementById('register-form').addEventListener('submit', (event) => {
         event.preventDefault();
         registerNewJudge(token);
     });
+    
+    document.getElementById('competition-form').addEventListener('submit', (event) => {
+        event.preventDefault();
+        registerNewCompetition(token);
+    });
 
-    // 4. 페이지네이션 버튼 이벤트 설정
+    // 4. 심판 목록 페이지네이션 버튼 이벤트 설정
     document.getElementById('prev-page-btn').addEventListener('click', () => {
-        if (currentPage > 1) {
-            currentPage--;
-            renderJudgesPage(); // 서버 요청 없이 화면만 다시 렌더링
+        if (currentJudgePage > 1) {
+            currentJudgePage--;
+            renderJudgesPage();
         }
     });
 
     document.getElementById('next-page-btn').addEventListener('click', () => {
         const totalPages = Math.ceil(allJudges.length / judgesPerPage);
-        if (currentPage < totalPages) {
-            currentPage++;
-            renderJudgesPage(); // 서버 요청 없이 화면만 다시 렌더링
+        if (currentJudgePage < totalPages) {
+            currentJudgePage++;
+            renderJudgesPage();
         }
     });
 });
 
-/**
- * 서버에서 모든 심판 목록을 가져와 전역 변수(allJudges)에 저장하고 첫 페이지를 렌더링하는 함수
- * @param {string} token - 인증 토큰
- */
+// =================================================================
+// 심판 관리 기능 (Judge Management Functions)
+// =================================================================
+
 async function fetchAllJudges(token) {
     try {
-        const response = await fetch('/judges', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (!response.ok) throw new Error('심판 목록을 불러오는데 실패했습니다.');
-        
-        allJudges = await response.json(); // 모든 심판 데이터를 전역 변수에 저장
-        currentPage = 1; // 페이지를 1로 초기화
-        renderJudgesPage(); // 첫 페이지를 화면에 표시
+        const response = await fetch('/judges', { headers: { 'Authorization': `Bearer ${token}` } });
+        if (!response.ok) throw new Error('심판 목록 로딩 실패');
+        allJudges = await response.json();
+        currentJudgePage = 1;
+        renderJudgesPage();
     } catch (error) {
         console.error(error);
         alert(error.message);
     }
 }
 
-/**
- * allJudges 배열에서 현재 페이지에 맞는 데이터를 잘라 화면 테이블을 그리는 함수
- */
 function renderJudgesPage() {
     const tableBody = document.getElementById('judges-tbody');
-    tableBody.innerHTML = ''; // 테이블 내용 비우기
-
-    const startIndex = (currentPage - 1) * judgesPerPage;
+    tableBody.innerHTML = '';
+    const startIndex = (currentJudgePage - 1) * judgesPerPage;
     const endIndex = startIndex + judgesPerPage;
     const judgesToShow = allJudges.slice(startIndex, endIndex);
 
     judgesToShow.forEach(judge => {
         const row = document.createElement('tr');
-        // JSON.stringify를 사용해 judge 객체 전체를 문자열로 전달하여 수정 함수에서 사용
         row.innerHTML = `
             <td>${judge.judge_number}</td>
             <td>${judge.name}</td>
@@ -88,67 +91,47 @@ function renderJudgesPage() {
     });
 
     const totalPages = Math.ceil(allJudges.length / judgesPerPage) || 1;
-    document.getElementById('page-info').textContent = `${currentPage} / ${totalPages}`;
-    document.getElementById('prev-page-btn').disabled = currentPage === 1;
-    document.getElementById('next-page-btn').disabled = currentPage >= totalPages;
+    document.getElementById('page-info').textContent = `${currentJudgePage} / ${totalPages}`;
+    document.getElementById('prev-page-btn').disabled = currentJudgePage === 1;
+    document.getElementById('next-page-btn').disabled = currentJudgePage >= totalPages;
 }
 
-/**
- * 폼 데이터를 가져와 신규 심판을 등록하고 목록을 새로고침하는 함수
- * @param {string} token - 인증 토큰
- */
 async function registerNewJudge(token) {
     const form = document.getElementById('register-form');
     const formData = new FormData(form);
     const judgeData = Object.fromEntries(formData.entries());
-    
     judgeData.national_license_grade = parseInt(judgeData.national_license_grade, 10);
 
     try {
         const response = await fetch('/judges', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify(judgeData)
         });
-
         if (!response.ok) {
             const errorResult = await response.json();
-            throw new Error(errorResult.detail || '심판 등록에 실패했습니다.');
+            throw new Error(errorResult.detail || '심판 등록 실패');
         }
-
-        alert('새로운 심판이 성공적으로 등록되었습니다.');
-        form.reset(); 
-        fetchAllJudges(token); // 전체 목록을 다시 불러와서 갱신
+        alert('신규 심판 등록 성공');
+        form.reset();
+        fetchAllJudges(token);
     } catch (error) {
         console.error(error);
         alert(error.message);
     }
 }
 
-/**
- * 특정 심판을 삭제하는 API를 호출하는 함수
- * @param {string} judgeId - 삭제할 심판의 UUID
- * @param {string} judgeName - 삭제 확인 창에 표시할 심판의 이름
- */
 async function deleteJudge(judgeId, judgeName) {
-    if (confirm(`정말로 '${judgeName}' 심판을 삭제하시겠습니까?`)) {
+    if (confirm(`'${judgeName}' 심판을 정말로 삭제하시겠습니까?`)) {
         const token = localStorage.getItem('access_token');
         try {
             const response = await fetch(`/judges/${judgeId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-
-            if (!response.ok) {
-                const errorResult = await response.json();
-                throw new Error(errorResult.detail || '심판 삭제에 실패했습니다.');
-            }
-
-            alert(`'${judgeName}' 심판이 성공적으로 삭제되었습니다.`);
-            fetchAllJudges(token); // 목록 새로고침
+            if (!response.ok) throw new Error('심판 삭제 실패');
+            alert(`'${judgeName}' 심판 삭제 성공`);
+            fetchAllJudges(token);
         } catch (error) {
             console.error(error);
             alert(error.message);
@@ -156,17 +139,10 @@ async function deleteJudge(judgeId, judgeName) {
     }
 }
 
-/**
- * 수정 모달을 열고, 선택한 심판의 데이터로 폼을 채우는 함수
- * @param {Event} event - 클릭 이벤트
- * @param {object} judge - 수정할 심판의 데이터 객체
- */
 function openEditModal(event, judge) {
     event.preventDefault();
     const modal = document.getElementById('edit-modal');
     const form = document.getElementById('edit-form');
-    
-    // 폼에 기존 데이터를 채워넣음
     form.id.value = judge.id;
     form.judge_number.value = judge.judge_number;
     form.name.value = judge.name;
@@ -174,29 +150,19 @@ function openEditModal(event, judge) {
     form.national_license_grade.value = judge.national_license_grade;
     form.email.value = judge.email;
     form.role.value = judge.role;
-    
     modal.showModal();
 }
 
-/**
- * 수정 모달을 닫는 함수
- * @param {Event} event - 클릭 이벤트
- */
 function closeEditModal(event) {
     event.preventDefault();
     document.getElementById('edit-modal').close();
 }
 
-/**
- * 수정 모달의 '저장' 버튼을 눌렀을 때 PATCH API를 호출하는 함수
- * @param {Event} event - 클릭 이벤트
- */
 async function handleUpdateJudge(event) {
     event.preventDefault();
     const form = document.getElementById('edit-form');
     const judgeId = form.id.value;
     const token = localStorage.getItem('access_token');
-    
     const updatedData = {
         judge_number: form.judge_number.value,
         name: form.name.value,
@@ -209,18 +175,69 @@ async function handleUpdateJudge(event) {
     try {
         const response = await fetch(`/judges/${judgeId}`, {
             method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify(updatedData)
         });
-
-        if (!response.ok) throw new Error('정보 수정에 실패했습니다.');
-
-        alert('심판 정보가 성공적으로 수정되었습니다.');
+        if (!response.ok) throw new Error('정보 수정 실패');
+        alert('심판 정보 수정 성공');
         document.getElementById('edit-modal').close();
-        fetchAllJudges(token); // 목록 새로고침
+        fetchAllJudges(token);
+    } catch (error) {
+        console.error(error);
+        alert(error.message);
+    }
+}
+
+// =================================================================
+// 대회 관리 기능 (Competition Management Functions)
+// =================================================================
+
+async function fetchAllCompetitions(token) {
+    try {
+        const response = await fetch('/competitions', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) throw new Error('대회 목록 로딩 실패');
+        allCompetitions = await response.json();
+        renderAllCompetitions();
+    } catch (error) {
+        console.error(error);
+        alert(error.message);
+    }
+}
+
+function renderAllCompetitions() {
+    const tableBody = document.getElementById('competitions-tbody');
+    tableBody.innerHTML = '';
+    allCompetitions.forEach(comp => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${comp.id}</td>
+            <td>${comp.name}</td>
+            <td>${comp.start_date}</td>
+            <td>${comp.end_date}</td>
+            <td>${comp.location}</td>
+            <td><a href="#">심판 배정</a></td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+async function registerNewCompetition(token) {
+    const form = document.getElementById('competition-form');
+    const formData = new FormData(form);
+    const competitionData = Object.fromEntries(formData.entries());
+
+    try {
+        const response = await fetch('/competitions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify(competitionData)
+        });
+        if (!response.ok) throw new Error('대회 등록 실패');
+        alert('신규 대회 등록 성공');
+        form.reset();
+        fetchAllCompetitions(token);
     } catch (error) {
         console.error(error);
         alert(error.message);
