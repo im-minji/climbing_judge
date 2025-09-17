@@ -61,13 +61,14 @@ function renderCompetitions(competitionsToDisplay) {
 
     competitionsToDisplay.forEach(comp => {
         const row = document.createElement('tr');
-        row.innerHTML = `
+         row.innerHTML = `
             <td>${comp.id}</td>
-            <td>${comp.name}</td>
+            
+            <td><a href="/static/admin_competition_detail.html?id=${comp.id}">${comp.name}</a></td>
+            
             <td>${comp.start_date}</td>
             <td>${comp.end_date}</td>
             <td>${comp.location}</td>
-            <td><a href="#">수정/배정</a></td>
         `;
         tableBody.appendChild(row);
     });
