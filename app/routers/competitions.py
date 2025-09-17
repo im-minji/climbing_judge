@@ -69,3 +69,18 @@ def delete_competition(competition_id: int, db: Client = Depends(get_supabase_cl
         raise HTTPException(status_code=404, detail="Competition not found")
         
     return {"message": f"Competition with id {competition_id} deleted successfully."}
+
+
+
+@router.delete("/competitions/{competition_id}/judges/{judge_id}", dependencies=[Depends(get_current_admin_user)])
+def unassign_judge_from_competition(competition_id: int, judge_id: str, db: Client = Depends(get_supabase_client)):
+    """
+    특정 대회에서 특정 심판의 배정을 취소(삭제)합니다. (관리자만 가능)
+    """
+    response = db.from_("competition_assignments").delete().eq("competition_id", competition_id).eq("judge_id", judge_id).execute()
+    
+    if not response.data:
+        raise HTTPException(status_code=404, detail="Assignment not found to delete")
+        
+    return {"message": "Judge assignment deleted successfully."}
+    

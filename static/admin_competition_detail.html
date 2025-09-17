@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>대회 상세 정보 - 관리자</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+    <style>
+        .judge-checklist { max-height: 300px; overflow-y: auto; border: 1px solid var(--contrast-border-color); padding: 1rem; border-radius: var(--border-radius); }
+    </style>
 </head>
 <body>
     <main class="container">
@@ -14,39 +17,41 @@
             </ul>
         </nav>
 
-        <hgroup id="competition-title">
-            </hgroup>
+        <form id="competition-details-form">
+            <hgroup id="competition-title">
+                </hgroup>
 
-        <section id="competition-details">
-            <h3>대회 정보</h3>
-            <form id="competition-edit-form">
-                </form>
-        </section>
+            <section id="competition-details">
+                <h3>대회 정보 수정</h3>
+                <div id="competition-edit-fields">
+                    </div>
+            </section>
 
-        <hr>
+            <hr>
 
-        <section id="assigned-judges">
-            <h3>배정된 심판 목록</h3>
-            <table id="assigned-judges-table">
-                <thead>
-                    <tr>
-                        <th>심판 번호</th>
-                        <th>이름</th>
-                        <th>등급</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    </tbody>
-            </table>
-        </section>
+            <section id="manage-assignments">
+                <h3>심판 배정 수정</h3>
+                <input type="search" id="judge-search" placeholder="심판 이름 또는 번호로 검색...">
+                <div id="judge-checklist" class="judge-checklist">
+                    </div>
+            </section>
+            
+            <button type="submit">변경사항 저장</button>
+        </form>
 
         <hr>
-        <section id="manage-assignments">
-            <h3>심판 배정 수정</h3>
-            <p>이곳에 전체 심판 목록을 체크박스로 불러와서 배정을 추가/삭제하는 기능이 들어갈 예정입니다.</p>
-            <button disabled>저장</button>
-        </section>
 
+        <article class="grid" style="--grid-spacing-horizontal: 0;">
+            <div>
+                <hgroup>
+                    <h3>대회 삭제</h3>
+                    <p>이 대회와 관련된 모든 심판 배정 기록이 영구적으로 삭제됩니다.</p>
+                </hgroup>
+            </div>
+            <div>
+                <button id="delete-competition-btn" class="contrast">이 대회 삭제하기</button>
+            </div>
+        </article>
     </main>
     <script src="/static/admin_competition_detail.js"></script>
 </body>
