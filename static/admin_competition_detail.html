@@ -9,18 +9,32 @@
         /* 기본적으로 수정 모드는 숨김 */
         #edit-mode { display: none; }
 
-        /* [새로운 스타일] 수정 및 삭제 섹션을 위한 스타일 */
-        .action-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
+        /* 심판 체크리스트 스타일 */
+        .judge-checklist { max-height: 300px; overflow-y: auto; border: 1px solid var(--contrast-border-color); padding: 1rem; border-radius: var(--border-radius); }
+        
+        /* 수정 및 삭제 버튼을 담을 컨테이너 */
+        .action-box {
+            margin-top: 2rem;
+            padding: 1.5rem;
             border: 1px solid var(--contrast-border-color);
             border-radius: var(--border-radius);
-            margin-top: 2rem;
+            text-align: center; /* 내부 요소들을 가운데 정렬 */
         }
-        .action-section p {
-            margin-bottom: 0; /* 문구의 아래쪽 여백 제거 */
+
+        /* action-box 안의 문구 스타일 */
+        .action-box p {
+            margin-bottom: 1rem; /* 버튼과의 간격 */
+        }
+        
+        /* 버튼이 꽉 차지 않도록 크기 자동 조절 */
+        .action-box button {
+            width: auto;
+            display: inline-block;
+        }
+
+        /* 대회 정보 텍스트 간격 조절 */
+        #competition-display p {
+            margin-bottom: 0.5rem;
         }
     </style>
 </head>
@@ -36,11 +50,11 @@
             </hgroup>
 
         <div id="view-mode">
-            <article id="competition-display-article">
-                <header><h3>대회 정보</h3></header>
+            <div id="competition-display-section">
+                <h3>대회 정보</h3>
                 <div id="competition-display">
                     </div>
-            </article>
+            </div>
 
             <section id="assigned-judges">
                 <h3>배정된 심판 목록</h3>
@@ -56,18 +70,38 @@
                 </table>
             </section>
 
-            <div class="action-section">
+            <div class="action-box">
                 <p>대회 정보나 심판 배정을 변경하려면 아래 버튼을 누르세요.</p>
                 <button id="edit-btn">수정하기</button>
+            </div>
+            
+            <div class="action-box">
+                <button id="delete-competition-btn" class="contrast outline">이 대회 삭제하기</button>
             </div>
         </div>
 
         <div id="edit-mode">
-            </div>
+            <form id="competition-details-form">
+                <article>
+                    <header><h3>대회 정보 수정</h3></header>
+                    <div id="competition-edit-fields">
+                        </div>
+                </article>
 
-        <div id="delete-section" class="action-section">
-            <p><strong>대회 삭제:</strong> 이 대회와 관련된 모든 기록이 영구적으로 삭제됩니다.</p>
-            <button id="delete-competition-btn" class="contrast outline">이 대회 삭제하기</button>
+                <article>
+                    <header><h3>심판 배정 수정</h3></header>
+                    <input type="search" id="judge-search" placeholder="심판 이름 또는 번호로 검색...">
+                    <div id="judge-checklist" class="judge-checklist">
+                        </div>
+                </article>
+                
+                <footer>
+                    <div class="grid">
+                        <button type="button" class="secondary" id="cancel-edit-btn">취소</button>
+                        <button type="submit">변경사항 저장</button>
+                    </div>
+                </footer>
+            </form>
         </div>
     </main>
     <script src="/static/admin_competition_detail.js"></script>
