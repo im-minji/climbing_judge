@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>심판 관리 - 관리자</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+</head>
+<body>
+    <main class="container">
+        <nav>
+            <ul>
+                <li><strong>심판 관리</strong></li>
+            </ul>
+            <ul>
+                <li><a href="/static/admin_competitions.html">대회 관리</a></li>
+            </ul>
+        </nav>
+
+        <header style="display: flex; justify-content: space-between; align-items: center;">
+            <hgroup>
+                <h2>심판 목록</h2>
+                <p>전체 심판 목록을 확인합니다.</p>
+            </hgroup>
+            <a href="/static/admin_judge_form.html" role="button">신규 심판 등록</a>
+        </header>
+        
+        <figure>
+            <table>
+                <thead>
+                    <tr>
+                        <th>심판 번호</th>
+                        <th>이름</th>
+                        <th>소속</th>
+                        <th>등급</th>
+                        <th>총 출장</th>
+                        <th>이메일</th>
+                        <th>역할</th>
+                        <th>관리</th>
+                    </tr>
+                </thead>
+                <tbody id="judges-tbody"></tbody>
+            </table>
+        </figure>
+        <nav>
+            <ul>
+                <li><button id="prev-page-btn" disabled>이전</button></li>
+                <li><span id="page-info">1 / 1</span></li>
+                <li><button id="next-page-btn" disabled>다음</button></li>
+            </ul>
+        </nav>
+    </main>
+    <script src="/static/admin_judges.js"></script>
+</body>
+</html>

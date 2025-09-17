@@ -54,7 +54,7 @@ loginForm.addEventListener('submit', async (event) => {
         // --- 4단계: 역할에 따라 페이지 이동 ---
         console.log(`6. 역할(${profile.role})에 따라 페이지 이동 준비...`);
         if (profile.role === 'admin') {
-            window.location.href = '/static/admin.html';
+            window.location.href = '/static/admin_judges.html';
         } else {
             window.location.href = '/static/profile.html';
         }

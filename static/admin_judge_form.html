@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>신규 심판 등록 - 관리자</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css">
+</head>
+<body>
+    <main class="container">
+        <nav>
+            <ul>
+                <li><a href="/static/admin_judges.html">← 심판 목록으로 돌아가기</a></li>
+            </ul>
+        </nav>
+        <hgroup>
+            <h2>신규 심판 등록</h2>
+            <p>새로운 심판의 정보를 입력해주세요.</p>
+        </hgroup>
+        <form id="register-form">
+            <div class="grid">
+                <input type="text" name="judge_number" placeholder="심판 번호" required>
+                <input type="text" name="name" placeholder="이름" required>
+            </div>
+            <div class="grid">
+                <input type="text" name="affiliation" placeholder="소속" required>
+                <input type="email" name="email" placeholder="이메일" required>
+            </div>
+            <div class="grid">
+                <input type="number" name="national_license_grade" placeholder="자격 등급 (숫자)" required>
+                <input type="password" name="password" placeholder="초기 비밀번호" required>
+            </div>
+            <button type="submit">심판 등록</button>
+        </form>
+    </main>
+    <script src="/static/admin_judge_form.js"></script>
+</body>
+</html>
