@@ -5,7 +5,8 @@ from fastapi import APIRouter, HTTPException, Depends
 from supabase import Client
 from app.db import get_supabase_client
 from app.schemas import CompetitionCreate, JudgeAssignmentCreate
-from app.routers.users import get_current_user_with_profile
+from app.routers.users import get_current_user_with_profile, get_current_admin_user
+
 
 
 router = APIRouter()
@@ -41,3 +42,30 @@ def assign_judge_to_competition(competition_id: int, assignment: JudgeAssignment
         
     return response.data
 
+
+@router.get("/competitions/{competition_id}")
+def get_competition_details(competition_id: int, current_user: dict = Depends(get_current_user_with_profile), db: Client = Depends(get_supabase_client)):
+    """
+    특정 대회 정보와, 그 대회에 배정된 심판들의 목록을 함께 조회합니다.
+    """
+    # Supabase의 JOIN 문법: "competition_assignments 테이블을 통해 judges 테이블의 모든 정보를 함께 가져온다"
+    response = db.from_("competitions").select("*, competition_assignments(*, judges(*))").eq("id", competition_id).single().execute()
+    
+    if not response.data:
+        raise HTTPException(status_code=404, detail="Competition not found")
+        
+    return response.data
+
+
+@router.delete("/competitions/{competition_id}", dependencies=[Depends(get_current_admin_user)])
+def delete_competition(competition_id: int, db: Client = Depends(get_supabase_client)):
+    """
+    특정 ID의 대회를 삭제합니다. (관리자만 가능)
+    """
+    response = db.from_("competitions").delete().eq("id", competition_id).execute()
+    
+    # 삭제된 데이터가 없으면 (존재하지 않는 ID), 404 에러 발생
+    if not response.data:
+        raise HTTPException(status_code=404, detail="Competition not found")
+        
+    return {"message": f"Competition with id {competition_id} deleted successfully."}
