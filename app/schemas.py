@@ -27,7 +27,7 @@ class LoginRequest(BaseModel):
 class JudgeUpdate(BaseModel):
 	judge_number: Optional[str] = None
 	name: Optional[str] = None
-	affiliation: Optional[int] = None
+	affiliation: Optional[str] = None
 	national_license_grage: Optional[int] = None
 	email: Optional[str] = None
 	role: Optional[str] = None
