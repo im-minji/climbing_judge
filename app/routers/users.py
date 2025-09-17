@@ -1,37 +1,32 @@
-# app/routers/users.py
 from fastapi import APIRouter, Depends, HTTPException, Request
-from app.db import supabase
+from supabase import Client
+from app.db import get_supabase_client
 
 router = APIRouter()
 
-# 의존성 함수: 요청 헤더에서 유효한 토큰을 확인하고 사용자 정보를 반환
-async def get_current_user(request: Request):
+async def get_current_user_with_profile(request: Request, db: Client = Depends(get_supabase_client)):
     auth_header = request.headers.get("Authorization")
     if not auth_header:
         raise HTTPException(status_code=401, detail="Authorization header missing")
-
     token = auth_header.split(" ")[1]
+    
     try:
-        user_response = supabase.auth.get_user(token)
-        return user_response.user
-    except Exception: # AuthApiError 대신 모든 예외(Exception)를 잡도록 변경
+        user_response = db.auth.get_user(token)
+        user = user_response.user
+    except Exception:
         raise HTTPException(status_code=401, detail="Invalid token")
 
-@router.get("/me")
-def get_my_profile(current_user: dict = Depends(get_current_user)):
-    """
-    로그인한 사용자의 프로필 정보(judges 테이블)를 반환합니다.
-    """
-    user_id = current_user.id
+    profile_response = db.from_("judges").select("*").eq("id", user.id).single().execute()
+    if not profile_response.data:
+        raise HTTPException(status_code=404, detail="Profile not found for authenticated user")
+    
+    return profile_response.data
 
-    # --- [디버깅 코드 추가] ---
-    # 서버가 어떤 ID로 프로필을 찾고 있는지 로그에 명확하게 출력합니다.
-    print(f"--- [DEBUG] Searching for profile with user_id: {user_id} ---")
-    # --- [디버깅 코드 끝] ---
-    
-    response = supabase.from_("judges").select("*").eq("id", user_id).single().execute()
-    
-    if not response.data:
-        raise HTTPException(status_code=404, detail="Profile not found")
-        
-    return response.data
+async def get_current_admin_user(current_user: dict = Depends(get_current_user_with_profile)):
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin privileges required")
+    return current_user
+
+@router.get("/me")
+def get_my_profile(current_user: dict = Depends(get_current_user_with_profile)):
+    return current_user

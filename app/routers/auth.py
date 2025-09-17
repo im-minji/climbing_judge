@@ -1,45 +1,38 @@
-from fastapi import APIRouter, HTTPException
-from app.db import supabase
+from fastapi import APIRouter, HTTPException, Depends
+from pydantic import BaseModel
+from supabase import Client
+from app.db import get_supabase_client
 from app.schemas import LoginRequest
 
 router = APIRouter()
 
 @router.post("/token")
-def login(request: LoginRequest):
-    """
-    사용자 심판 번호와 비밀번호로 로그인하여 세션(토큰)을 반환
-    """
+def login(request: LoginRequest, db: Client = Depends(get_supabase_client)):
     try:
-        # 1. 전달받은 심판 번호로 judges 테이블에서 해당 심판의 이메일을 조회
-        profile_res = supabase.from_("judges").select("email").eq("judge_number", request.judge_number).single().execute()
+        profile_res = db.from_("judges").select("email").eq("judge_number", request.judge_number).single().execute()
         
         if not profile_res.data:
             raise HTTPException(status_code=404, detail="Judge number not found")
         
         user_email = profile_res.data['email']
         
-        # 2. 조회한 이메일과 전달받은 비밀번호로 Supabase에 로그인 요청
-        auth_res = supabase.auth.sign_in_with_password({
+        auth_res = db.auth.sign_in_with_password({
             "email": user_email,
             "password": request.password
         })
         
         return auth_res.session
-        
     except Exception as e:
-        raise HTTPException(status_code=400, detail="Invalid login credentials")
-    
+        raise HTTPException(status_code=400, detail=f"Invalid login credentials: {e}")
 
-    # --- [새로운 디버깅용 API 추가] ---
 @router.get("/check-admin")
-def check_admin_privileges():
+def check_admin_privileges(db: Client = Depends(get_supabase_client)):
     try:
-        # 관리자만 가능한 '모든 사용자 목록 조회'를 시도합니다.
-        user_list = supabase.auth.admin.list_users() # 변수 이름을 user_list로 변경
+        user_list = db.auth.admin.list_users()
         return {
             "status": "SUCCESS", 
             "message": "Server has admin privileges.", 
-            "user_count": len(user_list) # .users를 제거하고 리스트의 길이를 바로 계산
+            "user_count": len(user_list.users if hasattr(user_list, 'users') else user_list)
         }
     except Exception as e:
         raise HTTPException(
