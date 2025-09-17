@@ -22,6 +22,8 @@
                             <th>심판 번호</th>
                             <th>이름</th>
                             <th>소속</th>
+                            <th>등급</th>
+                            <Th>총 출장</Th>
                             <th>이메일</th>
                             <th>역할</th>
                             <th>관리</th>
@@ -60,8 +62,42 @@
                 <button type="submit">심판 등록</button>
             </form>
         </section>
-    </main>
-
+    </main> <dialog id="edit-modal">
+      <article>
+        <header>
+          <a href="#close" aria-label="Close" class="close"></a>
+          <h2>심판 정보 수정</h2>
+        </header>
+        <form id="edit-form">
+            <input type="hidden" name="id">
+            <label>심판 번호
+                <input type="text" name="judge_number">
+            </label>
+            <label>이름
+                <input type="text" name="name">
+            </label>
+            <label>소속
+                <input type="text" name="affiliation">
+            </label>
+            <label>등급
+                <input type="number" name="national_license_grade">
+            </label>
+             <label>이메일
+                <input type="email" name="email">
+            </label>
+            <label>역할
+                <select name="role">
+                    <option value="judge">judge</option>
+                    <option value="admin">admin</option>
+                </select>
+            </label>
+        </form>
+        <footer>
+            <a href="#cancel" role="button" class="secondary" onclick="closeEditModal(event)">취소</a>
+            <a href="#confirm" role="button" onclick="handleUpdateJudge(event)">저장</a>
+        </footer>
+      </article>
+    </dialog>
     <script src="/static/admin.js"></script>
 </body>
 </html>
