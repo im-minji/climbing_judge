@@ -5,8 +5,16 @@ from fastapi import APIRouter, HTTPException, Depends
 from supabase import Client
 from app.db import get_supabase_client
 from app.schemas import CompetitionCreate, JudgeAssignmentCreate
+from app.routers.users import get_current_user_with_profile
+
 
 router = APIRouter()
+
+@router.get("/competitions")
+def get_competitions(current_user: dict = Depends(get_current_user_with_profile), db: Client = Depends(get_supabase_client)):
+    response = db.from_("competitions").select("*").order("start_date", desc=True).execute()
+    return response.data
+
 
 # [수정] 함수의 인자로 db: Client = Depends(...)를 추가하고, supabase를 db로 변경했습니다.
 # [수정] 함수 이름의 오타(compeition)를 수정했습니다.
@@ -32,3 +40,4 @@ def assign_judge_to_competition(competition_id: int, assignment: JudgeAssignment
         raise HTTPException(status_code=400, detail="Failed to assign judge. Check if IDs are correct.")
         
     return response.data
+

@@ -62,6 +62,46 @@
                 <button type="submit">심판 등록</button>
             </form>
         </section>
+        <hr>
+
+        <section id="competition-list-section">
+            <h2>대회 목록</h2>
+            <figure>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>대회 ID</th>
+                            <th>대회명</th>
+                            <th>시작일</th>
+                            <th>종료일</th>
+                            <th>장소</th>
+                            <th>관리</th>
+                        </tr>
+                    </thead>
+                    <tbody id="competitions-tbody">
+                        </tbody>
+                </table>
+            </figure>
+        </section>
+
+        <hr>
+
+        <section id="register-competition-section">
+            <h2>신규 대회 등록</h2>
+            <form id="competition-form">
+                <input type="text" name="name" placeholder="대회명" required>
+                <div class="grid">
+                    <label for="start_date">시작일
+                        <input type="date" name="start_date" required>
+                    </label>
+                    <label for="end_date">종료일
+                        <input type="date" name="end_date" required>
+                    </label>
+                </div>
+                <input type="text" name="location" placeholder="장소" required>
+                <button type="submit">대회 등록</button>
+            </form>
+        </section>
     </main> <dialog id="edit-modal">
       <article>
         <header>
